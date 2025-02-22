@@ -3,13 +3,10 @@
 namespace App\DataFixtures;
 
 use App\Entity\ShortLink;
-use BaseFixture;
 use Doctrine\Persistence\ObjectManager;
 
 class ShortLinkFixtures extends BaseFixture
 {
-    public const SHORT_LINKS_REF = "short-links";
-
     public function load(ObjectManager $manager): void
     {
         for ($i = 0; $i < 60; $i += 1) {

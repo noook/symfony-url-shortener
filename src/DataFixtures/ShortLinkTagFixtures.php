@@ -6,7 +6,6 @@ use App\DataFixtures\ShortLinkFixtures;
 use App\DataFixtures\TagFixtures;
 use App\Entity\ShortLink;
 use App\Entity\Tag;
-use BaseFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
