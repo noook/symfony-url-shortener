@@ -38,7 +38,6 @@ final class Version20250221122328 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE SCHEMA public');
         $this->addSql('CREATE SEQUENCE visits_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE TABLE visits (id SERIAL NOT NULL, short_link_id INT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, ip VARCHAR(255) NOT NULL, user_agent TEXT NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX idx_444839ea605d5d9 ON visits (short_link_id)');
