@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[AsCommand(
     name: 'user:create',
@@ -27,6 +28,7 @@ class CreateUserCommand extends Command
 
     // Inject services in the constructor
     public function __construct(
+        private ValidatorInterface $validator,
         private AuthService $authService,
     )
     {
@@ -61,8 +63,19 @@ class CreateUserCommand extends Command
             $password = $io->askHidden('What is your password?');
         }
 
-        // $userDto is not validated, just constructed. It should be validated.
         $userDto = new CreateUserDTO($email, $displayName, $password);
+
+        $errors = $this->validator->validate($userDto);
+        if ($errors->count() > 0) {
+            for ($i = 0; $i < $errors->count(); $i++) {
+                $io->error(sprintf(
+                    "[%s]: %s",
+                    $errors->get($i)->getPropertyPath(),
+                    $errors->get($i)->getMessage(),
+                ));
+            }
+            return Command::INVALID;
+        }
 
         // The following code might throw an error if the user already exists (username or email already in use)
         try {
