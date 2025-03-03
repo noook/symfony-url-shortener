@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\DTO\CreateUserDTO;
+use App\Entity\User;
 use App\Service\AuthService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,13 +22,12 @@ final class AuthController extends AbstractController
     ): JsonResponse
     {
         $user = $authService->registerUser($payload);
-
-        return $this->json([
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'displayName' => $user->getDisplayName(),
-            'roles' => $user->getRoles(),
-        ]);
+        return $this->json(
+            $user,
+            Response::HTTP_CREATED,
+            [],
+            ['groups' => User::USERINFO],
+        );
     }
 
     #[Route("/login", name: "app_login")]
