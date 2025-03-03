@@ -4,7 +4,6 @@ namespace App\Command\User;
 
 use App\DTO\CreateUserDTO;
 use App\Service\AuthService;
-use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -77,7 +76,7 @@ class CreateUserCommand extends Command
                 sprintf("Successfully created user %s", $user->getEmail()),
             );
             return Command::SUCCESS;
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             $io->error(
                 sprintf("Failed to create user %s", $email),
             );
