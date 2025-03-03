@@ -3,13 +3,11 @@
 namespace App\Controller;
 
 use App\DTO\CreateUserDTO;
-use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\AuthService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -19,18 +17,10 @@ final class AuthController extends AbstractController
     public function register(
         #[MapRequestPayload]
         CreateUserDTO $payload,
-        UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager,
+        AuthService $authService,
     ): JsonResponse
     {
-        $user = new User();
-        $user
-            ->setEmail($payload->email)
-            ->setDisplayName($payload->displayName)
-            ->setPassword($passwordHasher->hashPassword($user, $payload->password));
-
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $user = $authService->registerUser($payload);
 
         return $this->json([
             'id' => $user->getId(),
