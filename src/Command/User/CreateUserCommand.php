@@ -20,13 +20,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 )]
 class CreateUserCommand extends Command
 {
-    // Use constants so that we can references these when defining AND retrieving arguments/options
-    // It's less error-prone than using strings directly
     private const EMAIL = 'email';
     private const DISPLAY_NAME = 'display-name';
     private const PASSWORD = 'password';
 
-    // Inject services in the constructor
     public function __construct(
         private ValidatorInterface $validator,
         private AuthService $authService,
@@ -49,12 +46,9 @@ class CreateUserCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $email = $input->getArgument(self::EMAIL);
-        // The following options are optional before the command execution, but required during the command.
-        // Ask the user for the data if it's not provided
         $displayName = $input->getOption(self::DISPLAY_NAME);
         $password = $input->getOption(self::PASSWORD);
 
-        // Pressing enter without providing a value will result in a null value
         while ($displayName === null) {
             $displayName = $io->ask('What is your display name?');
         }
@@ -77,11 +71,8 @@ class CreateUserCommand extends Command
             return Command::INVALID;
         }
 
-        // The following code might throw an error if the user already exists (username or email already in use)
         try {
             $user = $this->authService->registerUser($userDto);
-            // Debug user
-            dump($user);
             $io->success(
                 sprintf("Successfully created user %s", $user->getEmail()),
             );
