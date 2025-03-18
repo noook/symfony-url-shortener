@@ -27,6 +27,11 @@ security:
                 path: /logout
                 target: app_login
 
+        # We need to disable security on this route, because the user is trying to authenticate.
+        github_auth:
+            pattern: ^/auth/github
+            security: false
+
         login:
             pattern: ^/api/login
             stateless: true
@@ -42,6 +47,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        # Be careful with the order. The first rule that matches will be used.
+        - { path: ^/auth/github, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/profile, roles: ROLE_USER }
