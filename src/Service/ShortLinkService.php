@@ -5,10 +5,10 @@ namespace App\Service;
 use Faker;
 use App\DTO\CreateShortLinkDTO;
 use App\Entity\ShortLink;
+use App\Exceptions\ShortLinkConflictException;
+use App\Exceptions\ShortLinkTooLongException;
 use App\Repository\ShortLinkRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ShortLinkService
 {
@@ -23,8 +23,15 @@ class ShortLinkService
         if ($dto->shortCode === null) {
             $shortLink->setShortCode($this->generateShortLink());
         } else {
+            // In this code we'll try to throw different errors.
+            if (strlen($dto->shortCode) > 10) {
+                throw new ShortLinkTooLongException(); // Will throw HTTP 422 error
+            }
             // Make sure it doesn't already exist, otherwise throw 409
-            // throw new HttpException(Response::HTTP_CONFLICT, 'Short code already exists');
+            $oldShortUrl = $this->shortLinkRepository->findOneBy(['shortCode' => $dto->shortCode]);
+            if ($oldShortUrl !== null) {
+                throw new ShortLinkConflictException($dto->shortCode); // Will throw HTTP 409 error
+            }
             $shortLink->setShortCode($dto->shortCode);
         }
 
