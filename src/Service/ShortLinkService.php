@@ -20,19 +20,16 @@ class ShortLinkService
     public function createShortLink(CreateShortLinkDTO $dto): ShortLink {
         $shortLink = new ShortLink();
         $shortLink->setUrl($dto->url);
-        if ($dto->shortCode === null) {
-            $shortLink->setShortCode($this->generateShortLink());
-        } else {
-            // In this code we'll try to throw different errors.
-            if (strlen($dto->shortCode) > 10) {
-                throw new ShortLinkTooLongException(); // Will throw HTTP 422 error
-            }
+        if ($dto->shortCode !== null) {
             // Make sure it doesn't already exist, otherwise throw 409
             $oldShortUrl = $this->shortLinkRepository->findOneBy(['shortCode' => $dto->shortCode]);
             if ($oldShortUrl !== null) {
                 throw new ShortLinkConflictException($dto->shortCode); // Will throw HTTP 409 error
             }
             $shortLink->setShortCode($dto->shortCode);
+        } else {
+            $shortLink->setShortCode($this->generateShortLink());
+            
         }
 
         $shortLink
